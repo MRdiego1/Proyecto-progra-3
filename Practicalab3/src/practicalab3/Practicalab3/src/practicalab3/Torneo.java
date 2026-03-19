@@ -1,13 +1,12 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package practicalab3;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Clase que representa un torneo (principal o repechaje)
+ */
 public class Torneo {
     private int id_torneo;
     private String categoria;
@@ -28,25 +27,7 @@ public class Torneo {
         actualizarReglasSegunFase();
     }
 
-    public void clasificarParticipantes(List<Peleador> todos_los_participantes) {
-        for (Peleador p : todos_los_participantes) {
-            String categoriaPeleador = obtenerCategoriaString(p);
-            if (categoriaPeleador.equals(this.categoria)) {
-                if (tipo_torneo.equals("principal") && p.estado.equalsIgnoreCase("Activo")) {
-                    this.lista_participantes.add(p);
-                } else if (tipo_torneo.equals("perdedores") && p.estado.equalsIgnoreCase("derrotado")) {
-                    this.lista_participantes.add(p);
-                }
-            }
-        }
-    }
-
-    private String obtenerCategoriaString(Peleador p) {
-        String gen = (p.genero == 'H' || p.genero == 'h') ? "hombre" : "mujer";
-        String edad = (p.edad < 18) ? "joven" : "grande"; 
-        return gen + "_" + edad;
-    }
-
+    //actualizar tiempo y rondas según fase
     public void actualizarReglasSegunFase() {
         switch (this.fase_actual.toLowerCase()) {
             case "octavos":
@@ -65,6 +46,7 @@ public class Torneo {
         }
     }
 
+    //emparejar participantes activos
     public List<Combate> emparejarParticipantes() {
         List<Combate> combates = new ArrayList<>();
         List<Peleador> disponibles = obtenerParticipantesPorEstado("activo");
@@ -82,6 +64,7 @@ public class Torneo {
         return combates;
     }
 
+    //procesar resultado de un combate
     public void procesarResultadoCombate(Peleador ganador, Peleador perdedor) {
         ganador.setVicorias(ganador.getVicorias() + 1);
         perdedor.setDerrotas(perdedor.getDerrotas() + 1);
@@ -103,6 +86,7 @@ public class Torneo {
         }
     }
 
+    //avanzar a la siguiente fase
     public boolean avanzarFase() {
         switch (this.fase_actual.toLowerCase()) {
             case "octavos":
@@ -121,6 +105,7 @@ public class Torneo {
         return false;
     }
 
+    //mostrar finalistas
     public void generarFinalistas() {
         List<Peleador> finalistas = obtenerParticipantesPorEstado("clasificado a final");
         if (finalistas.size() == 2) {
@@ -131,6 +116,7 @@ public class Torneo {
         }
     }
 
+    //pasar perdedores del principal al repechaje
     public void reintegrarPerdedores(Torneo torneo_principal) {
         List<Peleador> derrotados = torneo_principal.obtenerParticipantesPorEstado("derrotado");
         for (Peleador p : derrotados) {
@@ -139,6 +125,7 @@ public class Torneo {
         }
     }
 
+    //obtener participantes por estado
     public List<Peleador> obtenerParticipantesPorEstado(String estado) {
         List<Peleador> filtrados = new ArrayList<>();
         for (Peleador p : this.lista_participantes) {
@@ -149,13 +136,13 @@ public class Torneo {
         return filtrados;
     }
 
+    //registrar combate en historial del torneo y de cada peleador
     public void registrarCombate(Combate combate) {
         this.historial_combates.add(combate);
         
         Peleador p1 = combate.getPeleador1();
         Peleador p2 = combate.getPeleador2();
         
-        // Historial constructor: (int id, Peleador rival, boolean victoria, String fase, String tipoTorneo, LocalDateTime fecha, int rondas)
         Historial h1 = new Historial(historial_combates.size(), p2, false, this.fase_actual, this.tipo_torneo, LocalDateTime.now(), this.rondas);
         Historial h2 = new Historial(historial_combates.size(), p1, false, this.fase_actual, this.tipo_torneo, LocalDateTime.now(), this.rondas);
         
@@ -163,6 +150,7 @@ public class Torneo {
         p2.setHistorial(h2);
     }
 
+    //obtener estadísticas del torneo
     public String obtenerEstadisticasTorneo() {
         return "Total participantes: " + this.lista_participantes.size() + 
                "\nCombates realizados: " + this.historial_combates.size() + 
@@ -170,18 +158,25 @@ public class Torneo {
                "\nFinalistas: " + obtenerParticipantesPorEstado("clasificado a final").size();
     }
 
+    //verificar si hay suficientes participantes activos
     public boolean haySuficientesParticipantes() {
         int activos = obtenerParticipantesPorEstado("activo").size();
         return activos >= 2;
     }
 
+    //reiniciar torneo (sin borrar participantes)
     public void reiniciarTorneo() {
-        this.lista_participantes.clear();
+        for (Peleador p : lista_participantes) {
+            p.actualizarEstado("Activo");
+            p.setVicorias(0);
+            p.setDerrotas(0);
+        }
         this.historial_combates.clear();
         this.fase_actual = "octavos";
         actualizarReglasSegunFase();
     }
 
+    //getters
     public int getId_torneo() {
         return id_torneo;
     }
@@ -190,20 +185,8 @@ public class Torneo {
         return categoria;
     }
 
-    public String getTipo_torneo() {
-        return tipo_torneo;
-    }
-
     public String getFase_actual() {
         return fase_actual;
-    }
-
-    public String getTiempo_ronda() {
-        return tiempo_ronda;
-    }
-
-    public int getRondas() {
-        return rondas;
     }
 
     public List<Peleador> getLista_participante() {

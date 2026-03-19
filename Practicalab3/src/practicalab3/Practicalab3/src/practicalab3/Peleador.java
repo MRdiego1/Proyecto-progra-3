@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package practicalab3;
 
 import java.util.ArrayList;
@@ -10,42 +6,51 @@ import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- *
- * @author 186794
+ * Clase que representa un peleador
  */
 public class Peleador {
+    //atributos públicos (accesibles desde otras clases)
     String nombre;
     int edad;
     char genero;
+    String estado;
+    public final int categoria; // 1=welter, 2=medio, 3=pesado
+    
+    //atributos privados
     private int victorias, derrotas;
     private final int id;
-    String estado;
-    private List<Historial> historial = new ArrayList<>();
-    public final int categoria; // 1=welter, 2=medio, 3=pesado
     private double peso;
+    private List<Historial> historial = new ArrayList<>();
+    
+    //estáticos
     private static Scanner sc = new Scanner(System.in);
-    // contador para generar id unico
     private static final AtomicInteger contador = new AtomicInteger(0);
 
+    //constructor - pide datos al usuario
     public Peleador() {
         System.out.print("\n Ingresa el nombre del peleador: ");
         this.nombre = sc.nextLine();
+        
         System.out.print("\n Ingresa la edad del peleador: ");
         this.edad = sc.nextInt();
         sc.nextLine();
+        
         System.out.print("\n Ingresa el genero del peleador [H or M]: ");
         this.genero = sc.next().toUpperCase().charAt(0);
         sc.nextLine();
+        
         System.out.print("\n Ingresa el peso del peleador: ");
         this.peso = sc.nextDouble();
         sc.nextLine();
+        
         this.categoria = obtenerCategoria();
-        this.id = contador.incrementAndGet(); // incrementar el contador y asignar numero como id
+        this.id = contador.incrementAndGet();
         this.victorias = 0;
         this.derrotas = 0;
         this.estado = "Activo";
     }
 
+    //determina categoría según peso
     private int obtenerCategoria() {
         if (this.peso <= 77) {
             return 1; // Welter
@@ -56,6 +61,7 @@ public class Peleador {
         }
     }
 
+    //getters y setters
     public void actualizarEstado(String state) {
         this.estado = state;
     }
@@ -88,6 +94,7 @@ public class Peleador {
         return this.historial;
     }
 
+    //mostrar historial completo
     public void mostrarHistorial() {
         System.out.println("\n--- Historial de Combates de " + this.nombre + " ---");
         if (this.historial.isEmpty()) {
@@ -100,11 +107,15 @@ public class Peleador {
         }
     }
 
+    //mostrar información básica + historial
     public void mostrarInformacion() {
-        System.out.print(this.nombre + "  " + this.genero + "  " + this.victorias + "  " + this.derrotas
-                + "  " + this.id + "  " + this.estado);
-        System.out.println("Categoria: " + this.categoria);
+        System.out.println("Nombre: " + this.nombre);
+        System.out.println("Género: " + this.genero);
+        System.out.println("Victorias: " + this.victorias);
+        System.out.println("Derrotas: " + this.derrotas);
+        System.out.println("ID: " + this.id);
+        System.out.println("Estado: " + this.estado);
+        System.out.println("Categoría: " + this.categoria);
         mostrarHistorial();
-
     }
 }

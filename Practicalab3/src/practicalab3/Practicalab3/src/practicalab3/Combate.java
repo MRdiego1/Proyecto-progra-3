@@ -1,5 +1,8 @@
 package practicalab3;
 
+/**
+ * Clase que representa un combate entre dos peleadores
+ */
 public class Combate {
     private Peleador peleador1;
     private Peleador peleador2;
@@ -11,6 +14,7 @@ public class Combate {
         this.fase = fase;
     }
 
+    //getters y setters
     public Peleador getPeleador1() {
         return peleador1;
     }
